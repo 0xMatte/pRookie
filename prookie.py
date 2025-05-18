@@ -136,9 +136,9 @@ class pRookie:
         print('[+] Gamelist updated')
 
     def list_game_by_name(self, game_name: str) -> None:
-        for i, (name, _, update, size) in enumerate(self._game_list):
+        for i, (name, release_name, update, size) in enumerate(self._game_list):
             if game_name.lower() in name.lower():
-                print(f' {i:<4} {name} | {update} | {size}MB')
+                print(f' {i:<4} {name} | {update} | {size}MB | v76 {"ok" if "v76" in release_name else "no"}')
 
     def search_game(self) -> str:
         print('\nSearch game by name, use index to select')
