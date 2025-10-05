@@ -7,10 +7,37 @@ discord: `mattewastaken`
 Requirements
 ------------
 
+### Linux / Debian based
 ```sh
+# Install Python dependencies
 pip3 install requests
-apt install p7zip-full
-apt install rclone
+
+# Install system dependencies
+sudo apt install -y rclone p7zip-full
+```
+
+### Windows
+1. Install [Python](https://python.org/downloads/) (if not already installed)
+2. Install Python dependencies:
+   ```cmd
+   pip install requests
+   ```
+3. Download and install:
+   - [rclone](https://rclone.org/downloads/#release) 
+   - [7-zip](https://www.7-zip.org/download.html)
+4. **Important**: Add `rclone.exe` and `7z.exe` to your system PATH, or place them in the same folder as `prookie.py`
+
+## Running the script
+
+### Linux
+```sh
+chmod +x prookie.py
+./prookie.py
+```
+
+### Windows
+```cmd
+python prookie.py
 ```
 
 Usage

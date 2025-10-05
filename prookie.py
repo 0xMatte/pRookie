@@ -39,7 +39,7 @@ class pRookie:
                 check=True
             )
         except FileNotFoundError:
-            raise FileNotFoundError('RCLONE not installed!')
+            raise FileNotFoundError('rclone not installed, check README!')
 
         try:
             subprocess.run(
@@ -49,7 +49,7 @@ class pRookie:
                 check=True
             )
         except FileNotFoundError:
-            raise FileNotFoundError('7z not installed!')
+            raise FileNotFoundError('7z not installed, check README!')
 
         print('[+] Binaries satisfacted')
 
@@ -80,6 +80,13 @@ class pRookie:
         game_hash = md5((name + '\n').encode()).hexdigest()
         self._game_hash = game_hash
         return game_hash
+
+    def _clean_download(self) -> None:
+        if self._game_hash:
+            for file in os.listdir(self.data_directory):
+                if file.startswith(self._game_hash):
+                    os.remove(os.path.join(self.data_directory, file))
+            self._game_hash = None
 
     def update_game_list(self) -> None:
         filename = 'meta.7z'
@@ -138,7 +145,7 @@ class pRookie:
     def list_game_by_name(self, game_name: str) -> None:
         for i, (name, release_name, update, size) in enumerate(self._game_list):
             if game_name.lower() in name.lower():
-                print(f' {i:<4} {name} | {update} | {size}MB | v76 {"ok" if "v76" in release_name else "no"}')
+                print(f' {i:<4} {name} | {update} | {size}MB{" | v76" if "v76" in release_name else ""}')
 
     def search_game(self) -> str:
         print('\nSearch game by name, use index to select')
@@ -197,17 +204,19 @@ class pRookie:
                 check=True
             )
         except subprocess.CalledProcessError:
-            raise RuntimeError(f'Error while extracting {game_path}.7z.001')
+            raise RuntimeError(f'Error while extracting {game_path}')
 
         # Clean downloaded 7z
-        for file in os.listdir(self.data_directory):
-            if file.startswith(self._game_hash):
-                os.remove(os.path.join(self.data_directory, file))
-        self._game_hash = None
+        self._clean_download()
 
         print('[+] Game successfully downloaded and extracted!')
 
-
 if __name__ == '__main__':
-    downloader = pRookie(config_link='https://vrpirates.wiki/downloads/vrp-public.json')
-    downloader.download_game()
+    try:
+        downloader = pRookie(config_link='https://vrpirates.wiki/downloads/vrp-public.json')
+        downloader.download_game()
+    except KeyboardInterrupt:
+        downloader._clean_download()
+        print('\n\n[!] Download cleaned')
+    except Exception as e:
+        print(f'[-] {e}')
